@@ -55,8 +55,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
-    static double spinnerValue = 0.1;
-    static int levelValue = 1;
+
     private static final String TAG = "speedkana-MainActivity";
 
     @Override
@@ -99,7 +98,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         }
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -127,6 +125,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         // When the given tab is selected, switch to the corresponding page in
         // the ViewPager.
         mViewPager.setCurrentItem(tab.getPosition());
+
     }
 
     @Override
@@ -183,8 +182,13 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
          * The fragment argument representing the section number for this
          * fragment.
          */
+        private double spinnerValue = 0.1;
+        private int levelValue = 1;
         private static final String ARG_SECTION_NUMBER = "section_number";
-
+        private TextView exampleCard;
+        private Spinner timeSpinner;
+        private Spinner levelSpinner;
+        private Button startButton;
         /**
          * Returns a new instance of this fragment for the given section
          * number.
@@ -198,6 +202,12 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         }
 
         public PlaceholderFragment() {
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState){
+            super.onCreate(savedInstanceState);
+            setRetainInstance(true);
         }
 
         @Override
@@ -219,25 +229,34 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 //   break;
             }
             // An example of the kana that the user will be tested on
-            final TextView exampleCard = (TextView) rootView.findViewById(R.id.section_label);
+            exampleCard = (TextView) rootView.findViewById(R.id.section_label);
             exampleCard.setText(getString(card_visual));
 
             // Time Spinner
-            final Spinner timeSpinner = (Spinner) rootView.findViewById(R.id.time_spinner);
-            timeSpinner.setOnItemSelectedListener(this);
+            timeSpinner = (Spinner) rootView.findViewById(R.id.time_spinner);
             ArrayAdapter<CharSequence> timeAdapter = ArrayAdapter.createFromResource(rootView.getContext(), R.array.time_array, R.layout.spinner_layout);
             timeAdapter.setDropDownViewResource(R.layout.spinner_layout);
             timeSpinner.setAdapter(timeAdapter);
 
             // Level Spinner
-            final Spinner levelSpinner = (Spinner) rootView.findViewById(R.id.level_spinner);
+            levelSpinner = (Spinner) rootView.findViewById(R.id.level_spinner);
             levelSpinner.setOnItemSelectedListener(this);
             ArrayAdapter<CharSequence> levelAdapter = ArrayAdapter.createFromResource(rootView.getContext(), R.array.level_array, R.layout.spinner_layout);
             levelAdapter.setDropDownViewResource(R.layout.spinner_layout);
             levelSpinner.setAdapter(levelAdapter);
 
+            // On first activity start
+            if(null == savedInstanceState){
+                //String startValue = "1.5";
+                //int spinnerPosition = timeAdapter.getPosition(startValue);
+                int spinnerPosition = 1;
+                Log.i(TAG+".onCreateViewBefore", "" + spinnerValue);
+                timeSpinner.setSelection(spinnerPosition);
+                Log.i(TAG+".onCreateViewAfter", "" + spinnerValue);
+            }
+            timeSpinner.setOnItemSelectedListener(this);
             // Start!
-            final Button startButton = (Button) rootView.findViewById(R.id.start_button);
+            startButton = (Button) rootView.findViewById(R.id.start_button);
             startButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Intent speedRun = new Intent(v.getContext(), slydin.speedkana.SpeedActivity.class);
@@ -256,10 +275,13 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             // Get the string from the chosen position and convert
-            if (parent.getAdapter().getCount() > 3)
+            if (parent.getAdapter().getCount() > 4) {
                 spinnerValue = (double) Double.parseDouble(parent.getAdapter().getItem(position).toString());
-            else if (parent.getAdapter().getCount() < 3)
+                Log.i(TAG+".onItemSelected","" + spinnerValue);
+            }
+            else if (parent.getAdapter().getCount() < 5) {
                 levelValue = (int) Integer.parseInt(parent.getAdapter().getItem(position).toString());
+            }
         }
 
         @Override
