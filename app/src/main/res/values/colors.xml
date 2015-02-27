@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black_blue">#2E2C5E</color>
+    <color name="grey_blue">#909AE0</color>
+    <color name="white">#FFFFFF</color>
+    <!-- From colourlovers.com/palette/292482/Terra -->
+    <color name="abisso">#031634</color>
+    <color name="acqua">#036564</color>
+    <color name="acqua_profonda">#033649</color>
+    <color name="terra">#CDB380</color>
+    <color name="terra_terra">#E8DDCB</color>
+</resources>
