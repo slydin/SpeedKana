@@ -1,5 +1,6 @@
 package slydin.speedkana;
 
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.ActionBarActivity;
@@ -8,6 +9,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -36,7 +41,7 @@ public class SpeedActivity extends ActionBarActivity {
 
     private double interval = 0.8;
     private int level = 1;
-    private int levelResource = R.array.hiragana_level_one;
+    private String fileName = "hiragana_level_1";
     private int section = 0;
     private int index = 0;
     private Random r = new Random();
@@ -57,23 +62,53 @@ public class SpeedActivity extends ActionBarActivity {
         if (section == 1)
             switch (level) {
                 case 1:
-                    levelResource = R.array.hiragana_level_one;
+                    fileName = "hiragana_level_1";
                     break;
                 case 2:
-                    levelResource = R.array.hiragana_level_two;
+                    fileName = "hiragana_level_2";
+                    break;
+                case 3:
+                    fileName = "hiragana_level_3";
+                    break;
+                case 4:
+                    fileName = "hiragana_level_4";
                     break;
             }
         else if (section == 2)
             switch (level) {
                 case 1:
-                    levelResource = R.array.katakana_level_one;
+                    fileName = "katakana_level_1";
                     break;
                 case 2:
-                    levelResource = R.array.katakana_level_two;
+                    fileName = "katakana_level_2";
+                    break;
+                case 3:
+                    fileName = "katakana_level_3";
+                    break;
+                case 4:
+                    fileName = "katakana_level_4";
                     break;
             }
 
-        String[] tempLevelArray = getApplicationContext().getResources().getStringArray(levelResource);
+        AssetManager am = getAssets();
+
+        InputStream is;
+        BufferedReader reader;
+        String line;
+        ArrayList<String> fileLevelArray = new ArrayList<String>();
+        try{
+            is = am.open(fileName);
+            reader = new BufferedReader(new InputStreamReader(is));
+
+            while((line = reader.readLine()) != null){
+                fileLevelArray.add(line);
+            }
+
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        String[] tempLevelArray = fileLevelArray.toArray(new String[fileLevelArray.size()]);
+        //String[] tempLevelArray = getApplicationContext().getResources().getStringArray(levelResource);
         // Randomize the array
         levelArray = randomFill(tempLevelArray);
         interval_mill = (int) (interval * 1000);
@@ -81,7 +116,6 @@ public class SpeedActivity extends ActionBarActivity {
 
         // Display TextView
         speedView = (TextView) findViewById(R.id.speedView);
-
         timer = new CountDownTimer(totalInterval, interval_mill) {
             @Override
             public void onTick(long millisUntilFinished) {
