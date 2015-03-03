@@ -34,8 +34,6 @@
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:background="@color/terra"
-        android:popupBackground="@color/terra"
-        android:dropDownSelector="@color/terra"
         android:spinnerMode="dialog"/>
 
     <Spinner
@@ -47,7 +45,6 @@
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:background="@color/terra"
-        android:popupBackground="@color/terra"
         android:spinnerMode="dialog"/>
 
     <Button

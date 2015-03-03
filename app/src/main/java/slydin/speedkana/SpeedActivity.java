@@ -1,6 +1,7 @@
 package slydin.speedkana;
 
 import android.content.res.AssetManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.ActionBarActivity;
@@ -45,6 +46,7 @@ public class SpeedActivity extends ActionBarActivity {
     private int section = 0;
     private int index = 0;
     private Random r = new Random();
+    private SpeedTask sT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,25 +114,20 @@ public class SpeedActivity extends ActionBarActivity {
         // Randomize the array
         levelArray = randomFill(tempLevelArray);
         interval_mill = (int) (interval * 1000);
-        totalInterval = interval_mill * levelArray.length + interval_mill;
 
         // Display TextView
         speedView = (TextView) findViewById(R.id.speedView);
-        timer = new CountDownTimer(totalInterval, interval_mill) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                String character = levelArray[index];
-                index++;
-                speedView.setText(character);
-            }
-
-            @Override
-            public void onFinish() {
-                finish();
-            }
-        }.start();
     }
 
+    @Override
+    protected void onStart(){
+        super.onStart();
+        // Move work on a separate thread
+        sT = new SpeedTask(this);
+        sT.execute();
+
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -156,7 +153,7 @@ public class SpeedActivity extends ActionBarActivity {
 
     @Override
     public void onBackPressed() {
-        timer.cancel();
+        //timer.cancel();
         super.onBackPressed();
     }
 
@@ -180,5 +177,55 @@ public class SpeedActivity extends ActionBarActivity {
             freeCount = freeCount - 1;
         }
         return sList;
+    }
+
+    private class SpeedTask extends AsyncTask<Void, CharSequence, Void> {
+
+        public SpeedActivity taskActivity;
+
+        public SpeedTask(SpeedActivity a){
+            this.taskActivity = a;
+        }
+        @Override
+        protected Void doInBackground(Void... params) {
+            for(int i = 0; i < levelArray.length; i++){
+                publishProgress(levelArray[i]);
+                try {
+                    Thread.sleep(interval_mill);
+                } catch (InterruptedException e) {
+                   Log.i(TAG, "Interrupted");
+                   Thread.currentThread().interrupt();
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+//            timer = new CountDownTimer(totalInterval, interval_mill) {
+//                @Override
+//                public void onTick(long millisUntilFinished) {
+//                    String character = levelArray[index];
+//                    index++;
+//                    publishProgress(character);
+//                }
+//
+//                @Override
+//                public void onFinish() {
+//                    finish();
+//                }
+//            }.start();
+            Log.i(TAG, "End doInBackground()");
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(CharSequence... params){
+            speedView.setText(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Void result){
+            Log.i(TAG, "onPostExecute()");
+            taskActivity.finish(); // hopefully prevents memory leaks
+        }
     }
 }
