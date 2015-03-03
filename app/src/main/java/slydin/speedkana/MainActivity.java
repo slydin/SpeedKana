@@ -213,6 +213,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+            //Display display = ((WindowManager) getActivity().getApplicationContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+            //int rotation = display.getRotation();
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             // Add the textview to indicate section
             Bundle args = this.getArguments();
@@ -240,7 +242,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
             // Level Spinner
             levelSpinner = (Spinner) rootView.findViewById(R.id.level_spinner);
-            levelSpinner.setOnItemSelectedListener(this);
+
             ArrayAdapter<CharSequence> levelAdapter = ArrayAdapter.createFromResource(rootView.getContext(), R.array.level_array, R.layout.spinner_layout);
             levelAdapter.setDropDownViewResource(R.layout.spinner_layout);
             levelSpinner.setAdapter(levelAdapter);
@@ -255,6 +257,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 Log.i(TAG+".onCreateViewAfter", "" + spinnerValue);
             }
             timeSpinner.setOnItemSelectedListener(this);
+            levelSpinner.setOnItemSelectedListener(this);
             // Start!
             startButton = (Button) rootView.findViewById(R.id.start_button);
             startButton.setOnClickListener(new View.OnClickListener() {
